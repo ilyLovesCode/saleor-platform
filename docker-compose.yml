@@ -2,7 +2,7 @@ version: "3.4"
 
 services:
   api:
-    image: ghcr.io/saleor/saleor:3.20
+    image: saleor-app:3.20.68-sber
     ports:
       - 8000:8000
     restart: unless-stopped
@@ -56,7 +56,7 @@ services:
       - saleor-redis:/data
 
   worker:
-    image: ghcr.io/saleor/saleor:3.20
+    image: saleor-app:3.20.68-sber
     command: celery -A saleor --app=saleor.celeryconf:app worker --loglevel=info -B
     restart: unless-stopped
     networks:
@@ -106,14 +106,37 @@ services:
       - typesense-data:/data
     command: '--data-dir /data --api-key=xyz --enable-cors'
 
+  strapi:
+    container_name: strapi
+    image: strapi/strapi
+    environment:
+      - NODE_ENV=production
+      - DATABASE_CLIENT=postgres
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=strapi
+      - DATABASE_USERNAME=strapi
+      - DATABASE_PASSWORD=strapi
+    networks:
+      - saleor-backend-tier
+    ports:
+      - 1337:1337
+    volumes:
+      - strapi-data:/srv/app
+    depends_on:
+      - db
+    command: 'yarn develop'
+
 volumes:
   saleor-db:
     driver: local
   saleor-redis:
     driver: local
-  saleor-media:
   typesense-data:
     driver: local
+  strapi-data:
+    driver: local
+  saleor-media:
 
 networks:
   saleor-backend-tier:
