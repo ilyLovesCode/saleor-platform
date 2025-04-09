@@ -2,7 +2,7 @@ version: "3.4"
 
 services:
   api:
-    image: saleor-app:3.20.68-sber
+    image: inf4118/saleor-app:3.20.68-sber
     ports:
       - 8000:8000
     restart: unless-stopped
@@ -56,7 +56,7 @@ services:
       - saleor-redis:/data
 
   worker:
-    image: saleor-app:3.20.68-sber
+    image: inf4118/saleor-app:3.20.68-sber
     command: celery -A saleor --app=saleor.celeryconf:app worker --loglevel=info -B
     restart: unless-stopped
     networks:
